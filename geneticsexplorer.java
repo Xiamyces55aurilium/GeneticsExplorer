@@ -130,29 +130,34 @@ public class GeneticsExplorer extends JFrame implements ActionListener {
     return result.toString();
 }
 
+   
     @Override
-    public void actionPerformed(ActionEvent e) {
-    String p1 = parent1Input.getText().trim();
-    String p2 = parent2Input.getText().trim();
+        public void actionPerformed(ActionEvent e) {
+            String p1 = parent1Input.getText().trim();
+            String p2 = parent2Input.getText().trim();
+        
+            if (p1.isEmpty() || p2.isEmpty()) {
+                resultArea.setText("Please enter both parent genotypes.");
+                return;
+            }
+        
+            if (!isValidGenotype(p1) || !isValidGenotype(p2)) {
+                resultArea.setText("Invalid genotype format. Use pairs of letters only, e.g., AaBb.");
+                return;
+            }
+        
+            if (p1.length() != p2.length()) {
+                resultArea.setText("Parent genotypes must be of equal length.");
+                return;
+            }
+        
+            int geneCount = p1.length() / 2;
+        
+            Map<String, Integer> freqMap = PunnettCalculator.getOffspringCounts(p1, p2);
+            String result = PunnettCalculator.formatResults(freqMap, geneCount);
+            resultArea.setText(result);
+        }
 
-    if (p1.isEmpty() || p2.isEmpty()) {
-        resultArea.setText("Please enter both parent genotypes.");
-        return;
-    }
-
-    if (!isValidGenotype(p1) || !isValidGenotype(p2)) {
-        resultArea.setText("Invalid genotype format. Use pairs of letters only, e.g., AaBb.");
-        return;
-    }
-
-    if (p1.length() != p2.length()) {
-        resultArea.setText("Parent genotypes must be of equal length.");
-        return;
-    }
-
-    String result = calculateOffspringGenotypes(p1, p2);
-    resultArea.setText(result);
-}
 
     
     public static void main(String[] args) {
