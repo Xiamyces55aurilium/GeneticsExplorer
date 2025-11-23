@@ -1,0 +1,11 @@
+src/
+ └── main/
+     └── java/
+         └── com/
+             └── yourname/
+                 ├── GeneticsExplorer.java        (Main UI class)
+                 ├── PunnettCalculator.java       (Logic module)
+                 ├── validation/
+                 │    └── InputValidator.java    (Input validation class)
+                 └── utils/
+                      └── Helper.java           (Any utility functions)
