@@ -132,8 +132,28 @@ public class GeneticsExplorer extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // To be filled in next steps for calculation
+    String p1 = parent1Input.getText().trim();
+    String p2 = parent2Input.getText().trim();
+
+    if (p1.isEmpty() || p2.isEmpty()) {
+        resultArea.setText("Please enter both parent genotypes.");
+        return;
     }
+
+    if (!isValidGenotype(p1) || !isValidGenotype(p2)) {
+        resultArea.setText("Invalid genotype format. Use pairs of letters only, e.g., AaBb.");
+        return;
+    }
+
+    if (p1.length() != p2.length()) {
+        resultArea.setText("Parent genotypes must be of equal length.");
+        return;
+    }
+
+    String result = calculateOffspringGenotypes(p1, p2);
+    resultArea.setText(result);
+}
+
     
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
