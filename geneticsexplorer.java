@@ -37,7 +37,88 @@ public class GeneticsExplorer extends JFrame implements ActionListener {
         resultArea.setEditable(false);
         add(new JScrollPane(resultArea), BorderLayout.CENTER);
     }
+    private String calculateOffspringGenotypes(String parent1, String parent2) {
+    // Validate input lengths are equal and even sized (pairs of alleles)
+    if (parent1.length() != parent2.length() || parent1.length() % 2 != 0) {
+        return "Error: Genotypes must have equal even length (e.g. Aa, Bb).";
+    }
     
+    int geneCount = parent1.length() / 2;
+    
+    // For each gene pair, get all possible allele combinations (2x2 Punnett square)
+    // Store results of all genes and later combine
+    
+    // List of partial genotype combinations from each gene
+    java.util.List<String> geneCombinations = new java.util.ArrayList<>();
+    
+    for (int i = 0; i < geneCount; i++) {
+        char p1a1 = parent1.charAt(2*i);
+        char p1a2 = parent1.charAt(2*i + 1);
+        char p2a1 = parent2.charAt(2*i);
+        char p2a2 = parent2.charAt(2*i + 1);
+        
+        // Create all allele pairs for this gene (4 combinations)
+        String[] combos = new String[] {
+            "" + p1a1 + p2a1,
+            "" + p1a1 + p2a2,
+            "" + p1a2 + p2a1,
+            "" + p1a2 + p2a2
+        };
+        
+        // Sort alleles in each combo alphabetically (e.g. "aA" -> "Aa") for uniformity
+        for (int j = 0; j < combos.length; j++) {
+            char[] chars = combos[j].toCharArray();
+            java.util.Arrays.sort(chars);
+            combos[j] = new String(chars);
+        }
+        
+        // Store combos for this gene (duplicated combos for frequency count)
+        geneCombinations.add(String.join(",", combos));
+    }
+    
+    // Now combine the gene combos to form full genotypes (Cartesian product)
+    java.util.Map<String, Integer> freqMap = new java.util.HashMap<>();
+    
+    // Initialize freqMap with first gene combos
+    String[] firstGeneCombos = geneCombinations.get(0).split(",");
+    for (String fg : firstGeneCombos) {
+        freqMap.put(fg, 1);
+    }
+    
+    for (int i = 1; i < geneCombinations.size(); i++) {
+        String[] geneCombos = geneCombinations.get(i).split(",");
+        
+        java.util.Map<String, Integer> tempMap = new java.util.HashMap<>();
+        
+        for (String existing : freqMap.keySet()) {
+            int existingCount = freqMap.get(existing);
+            for (String newGene : geneCombos) {
+                String combined = existing + newGene;
+                // Sort combined alleles gene-wise for clarity
+                // We keep each gene's alleles grouped but not reorder genes overall here
+                tempMap.put(combined, tempMap.getOrDefault(combined, 0) + existingCount);
+            }
+        }
+        
+        freqMap = tempMap;
+    }
+    
+    // Total combinations = 4^geneCount
+    int total = (int) Math.pow(4, geneCount);
+    
+    // Build result string sorted by descending frequency
+    StringBuilder result = new StringBuilder();
+    result.append("Possible offspring genotypes with probabilities:\n");
+    freqMap.entrySet().stream()
+        .sorted((e1, e2) -> e2.getValue() - e1.getValue())
+        .forEach(e -> {
+            double prob = (double) e.getValue() / total * 100;
+            result.append(String.format("%s : %d times (%.2f%%)\n", e.getKey(), e.getValue(), prob));
+        });
+    
+    return result.toString();
+}
+
     @Override
     public void actionPerformed(ActionEvent e) {
         // To be filled in next steps for calculation
