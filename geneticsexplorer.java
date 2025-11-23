@@ -36,6 +36,17 @@ public class GeneticsExplorer extends JFrame implements ActionListener {
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        private boolean isValidGenotype(String genotype) {
+    if (genotype == null || genotype.length() == 0) return false;
+    if (genotype.length() % 2 != 0) return false; // Must have pairs
+    
+    for (int i = 0; i < genotype.length(); i++) {
+        char c = genotype.charAt(i);
+        if (!Character.isLetter(c)) return false; // Only letters allowed
+    }
+    return true;
+}
+
     }
     private String calculateOffspringGenotypes(String parent1, String parent2) {
     // Validate input lengths are equal and even sized (pairs of alleles)
